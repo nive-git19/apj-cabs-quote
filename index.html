@@ -1,579 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APJ Cabs – Instant Quote</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --gold:#C8960A;--gold-light:#fdf6e3;--gold-border:#e8d080;
-  --dark:#111827;--ink:#1f2937;--mid:#6b7280;--light:#9ca3af;
-  --bg:#f9fafb;--white:#ffffff;--border:#e5e7eb;
-  --green:#059669;--red:#dc2626;--radius:16px;
-  --shadow:0 1px 3px rgba(0,0,0,.1),0 8px 24px rgba(0,0,0,.06);
-}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-.header{background:var(--dark);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
-.logo{color:#fff;font-size:18px;font-weight:800;letter-spacing:2px}.logo span{color:var(--gold)}
-.header-badge{background:rgba(200,150,10,.15);border:1px solid rgba(200,150,10,.3);color:var(--gold);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;letter-spacing:.5px}
-.progress-wrap{background:#fff;border-bottom:1px solid var(--border);padding:14px 24px}
-.progress-bar{max-width:560px;margin:0 auto;display:flex;align-items:center}
-.step-item{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
-.step-item:not(:last-child)::after{content:'';position:absolute;top:12px;left:55%;width:90%;height:2px;background:var(--border);z-index:0;transition:background .4s}
-.step-item.done:not(:last-child)::after{background:var(--gold)}
-.step-num{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--light);position:relative;z-index:1;transition:all .3s}
-.step-item.active .step-num{border-color:var(--gold);background:var(--gold);color:#fff;box-shadow:0 0 0 4px rgba(200,150,10,.2)}
-.step-item.done .step-num{border-color:var(--gold);background:var(--gold);color:#fff}
-.step-lbl{font-size:10px;color:var(--light);margin-top:5px;font-weight:500}
-.step-item.active .step-lbl{color:var(--gold);font-weight:700}
-.step-item.done .step-lbl{color:var(--green)}
-.main{max-width:600px;margin:28px auto 80px;padding:0 16px}
-.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:32px;margin-bottom:16px;border:1px solid var(--border)}
-.card-eyebrow{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.card-title{font-size:24px;font-weight:800;color:var(--ink);margin-bottom:4px;line-height:1.2}
-.card-sub{font-size:14px;color:var(--mid);margin-bottom:28px;line-height:1.5}
-.field{margin-bottom:18px}
-.field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
-.req{color:var(--red)}
-.field input,.field select{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:'Inter',sans-serif;color:var(--ink);background:#fff;outline:none;transition:all .2s;-webkit-appearance:none}
-.field input:focus,.field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,150,10,.12)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.location-wrap{position:relative}
-.location-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
-.location-wrap input{padding-left:40px}
-.btn{padding:13px 24px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
-.btn-gold{background:linear-gradient(135deg,#d4a012,#b8880a);color:#fff;box-shadow:0 4px 12px rgba(200,150,10,.3)}
-.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(200,150,10,.4)}
-.btn-outline{background:#fff;color:var(--ink);border:1.5px solid var(--border)}
-.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
-.btn-green{background:linear-gradient(135deg,#059669,#047857);color:#fff;box-shadow:0 4px 12px rgba(5,150,105,.3)}
-.btn-green:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(5,150,105,.4)}
-.btn-full{width:100%}
-.btn-row{display:flex;gap:10px;margin-top:24px}
-.v-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.v-card{border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;background:#fff}
-.v-card:hover{border-color:var(--gold);background:var(--gold-light);transform:translateX(2px)}
-.v-card.selected{border-color:var(--gold);background:var(--gold-light);box-shadow:0 0 0 3px rgba(200,150,10,.15)}
-.v-icon{font-size:30px;min-width:42px;text-align:center}
-.v-info{flex:1}
-.v-name{font-size:15px;font-weight:700}
-.v-meta{font-size:12px;color:var(--mid);margin-top:2px}
-.v-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--gold);color:#fff;margin-top:5px}
-.v-price{text-align:right;min-width:80px}
-.v-from{font-size:10px;color:var(--light);font-weight:500}
-.v-amt{font-size:16px;font-weight:800;color:var(--ink)}
-.pkg-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.pkg-card{border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:space-between;background:#fff}
-.pkg-card:hover{border-color:var(--gold);background:var(--gold-light)}
-.pkg-card.selected{border-color:var(--gold);background:var(--gold-light);box-shadow:0 0 0 3px rgba(200,150,10,.15)}
-.pkg-name{font-size:15px;font-weight:700}
-.pkg-detail{font-size:12px;color:var(--mid);margin-top:3px}
-.pkg-extra-warn{font-size:12px;color:#d97706;margin-top:3px;font-weight:500}
-.pkg-extra-ok{font-size:12px;color:var(--green);margin-top:3px;font-weight:500}
-.pkg-price{font-size:20px;font-weight:800;text-align:right}
-.pkg-gst{font-size:11px;color:var(--mid);margin-top:2px;text-align:right}
-.summary-strip{background:linear-gradient(135deg,#1f2937,#374151);border-radius:12px;padding:16px 20px;margin-bottom:20px;color:#fff}
-.ss-row{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:6px}
-.ss-row:last-child{margin-bottom:0}
-.ss-val{font-weight:700;color:var(--gold)}
-.quote-hero{background:linear-gradient(135deg,#111827,#1e3a5f);border-radius:14px;padding:28px 24px;text-align:center;color:#fff;margin-bottom:20px}
-.qh-vehicle{font-size:20px;font-weight:800;letter-spacing:.5px}
-.qh-meta{font-size:13px;color:#94a3b8;margin-top:4px}
-.qh-amount{font-size:48px;font-weight:800;color:var(--gold);margin:16px 0 4px;line-height:1}
-.qh-sub{font-size:12px;color:#94a3b8}
-.qt{width:100%;border-collapse:collapse}
-.qt tr td{padding:12px 0;border-bottom:1px solid var(--border);font-size:14px;vertical-align:top}
-.qt tr:last-child td{border-bottom:none}
-.qt td:first-child{color:var(--mid);padding-right:16px}
-.qt td:last-child{text-align:right;font-weight:600;color:var(--ink)}
-.qt .divider td{border-top:2px solid var(--ink);padding-top:14px;font-size:16px;font-weight:800}
-.qt .section-head td{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--light);padding-top:16px;padding-bottom:4px;border-bottom:none;font-weight:600}
-.alert{border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.6;margin-top:14px}
-.alert-warn{background:#fffbeb;border:1px solid #fcd34d;color:#92400e}
-.loading-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:48px 32px;text-align:center;display:none}
-.spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:16px;font-weight:600;color:var(--ink)}
-.loading-sub{font-size:13px;color:var(--mid);margin-top:6px}
-.success-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:40px 32px;text-align:center}
-.success-emoji{font-size:56px;margin-bottom:16px}
-.success-title{font-size:24px;font-weight:800;color:var(--green)}
-.success-msg{font-size:14px;color:var(--mid);margin-top:10px;line-height:1.7}
-.info-box{background:var(--gold-light);border:1px solid var(--gold-border);border-radius:10px;padding:14px 18px;font-size:13px;color:#78460a;margin-top:20px;text-align:left;line-height:1.7}
-.step-panel{display:none}.step-panel.active{display:block}
-@media(max-width:480px){
-  .field-row{grid-template-columns:1fr}
-  .card{padding:22px 16px}
-  .btn-row{flex-direction:column-reverse}
-  .qh-amount{font-size:38px}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>APJ Cabs – Get Your Quote</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      padding: 16px;
+    }
+    .header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: #f5a623;
+      text-align: center;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+    }
+    .header h2 { font-size: 1.2rem; }
+    .header p { font-size: 0.8rem; color: #ccc; margin-top: 4px; }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #555;
+      display: block;
+      margin-bottom: 4px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      background: #fafafa;
+    }
+    .fare-box {
+      background: #fff8e7;
+      border: 1px solid #f5a623;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .fare-box .amount {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #e67e00;
+    }
+    .fare-box .label { font-size: 0.75rem; color: #888; }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .btn-primary { background: #f5a623; color: white; }
+    .btn-agent { background: #1a1a2e; color: white; display: none; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .status-msg {
+      text-align: center;
+      font-size: 0.82rem;
+      color: #27ae60;
+      margin-top: 6px;
+      display: none;
+    }
+    .error-msg {
+      text-align: center;
+      font-size: 0.82rem;
+      color: #e74c3c;
+      margin-top: 6px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
+
 <div class="header">
-  <div class="logo">APJ <span>CABS</span></div>
-  <div class="header-badge">✦ INSTANT QUOTE</div>
-</div>
-<div class="progress-wrap">
-  <div class="progress-bar">
-    <div class="step-item active" id="pi-1"><div class="step-num">1</div><div class="step-lbl">You</div></div>
-    <div class="step-item" id="pi-2"><div class="step-num">2</div><div class="step-lbl">Trip</div></div>
-    <div class="step-item" id="pi-3"><div class="step-num">3</div><div class="step-lbl">Vehicle</div></div>
-    <div class="step-item" id="pi-4"><div class="step-num">4</div><div class="step-lbl">Package</div></div>
-    <div class="step-item" id="pi-5"><div class="step-num">5</div><div class="step-lbl">Quote</div></div>
-  </div>
-</div>
-<div class="main">
-
-<div class="step-panel active" id="s1">
-  <div class="card">
-    <div class="card-eyebrow">Welcome</div>
-    <div class="card-title">Get Your Instant Fare Quote</div>
-    <div class="card-sub">Premium chauffeur-driven vehicles across India. Get an accurate estimate in under a minute.</div>
-    <div class="field"><label>Full Name <span class="req">*</span></label><input id="f_name" type="text" placeholder="Your full name" autocomplete="name"></div>
-    <div class="field"><label>Mobile Number <span class="req">*</span></label><input id="f_phone" type="tel" placeholder="10-digit mobile" maxlength="10" autocomplete="tel"></div>
-    <div class="field"><label>Your City <span class="req">*</span></label>
-      <select id="f_city">
-        <option value="">Select your city</option>
-        <option value="Chennai">Chennai</option>
-        <option value="Bengaluru">Bengaluru</option>
-        <option value="Hyderabad">Hyderabad</option>
-        <option value="Mumbai">Mumbai</option>
-        <option value="Delhi">Delhi</option>
-        <option value="Kochi">Kochi</option>
-        <option value="Coimbatore">Coimbatore</option>
-        <option value="Madurai">Madurai</option>
-        <option value="Pune">Pune</option>
-        <option value="Kolkata">Kolkata</option>
-        <option value="OTHER">Other city – Agent will assist</option>
-      </select>
-    </div>
-    <div class="btn-row"><button class="btn btn-gold btn-full" onclick="step1Next()">Continue &rarr;</button></div>
-  </div>
+  <h2>🚖 APJ Cabs</h2>
+  <p>Instant Fare Calculator</p>
 </div>
 
-<div class="step-panel" id="s2">
-  <div class="card">
-    <div class="card-eyebrow">Trip Details</div>
-    <div class="card-title">Where are you headed?</div>
-    <div class="card-sub">Distance is calculated garage-to-garage for accurate pricing.</div>
-    <div class="field"><label>Pickup Location <span class="req">*</span></label>
-      <div class="location-wrap"><span class="location-icon">📍</span><input id="f_pickup" type="text" placeholder="Enter pickup area or address"></div>
-    </div>
-    <div class="field"><label>Drop Location <span class="req">*</span></label>
-      <div class="location-wrap"><span class="location-icon">🏁</span><input id="f_drop" type="text" placeholder="Enter drop area or address"></div>
-    </div>
-    <div class="field-row">
-      <div class="field"><label>Passengers <span class="req">*</span></label>
-        <select id="f_pax">
-          <option value="">Select</option>
-          <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-          <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-          <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-          <option value="10">10</option><option value="11">11</option><option value="12">12</option>
-          <option value="16">13-16</option><option value="25">17-25</option>
-          <option value="36">26-36</option><option value="40">37-40</option><option value="42">41-42</option>
-        </select>
-      </div>
-      <div class="field"><label>Large Bags</label>
-        <select id="f_bags">
-          <option value="0">0</option><option value="1">1</option><option value="2">2</option>
-          <option value="3">3</option><option value="4">4</option><option value="5">5+</option>
-        </select>
-      </div>
-    </div>
-    <div class="field"><label>Trip Date <span class="req">*</span></label><input id="f_date" type="date"></div>
-    <div class="btn-row">
-      <button class="btn btn-outline" onclick="showStep(1)">&#8592; Back</button>
-      <button class="btn btn-gold" style="flex:1" onclick="step2Next()">Calculate Route &rarr;</button>
-    </div>
-  </div>
+<div class="card">
+  <label>Your Name</label>
+  <input type="text" id="custName" placeholder="Enter your name" />
+
+  <label>Mobile Number</label>
+  <input type="tel" id="custPhone" placeholder="+91 XXXXXXXXXX" />
+
+  <label>Pickup Location</label>
+  <input type="text" id="pickup" placeholder="e.g. Chennai Central" />
+
+  <label>Drop Location</label>
+  <input type="text" id="drop" placeholder="e.g. Chennai Airport" />
+
+  <label>Journey Date</label>
+  <input type="date" id="journeyDate" />
+
+  <label>Journey Type</label>
+  <select id="journeyType">
+    <option value="">Select type</option>
+    <option value="LOCAL">Local</option>
+    <option value="OUTSTATION">Outstation</option>
+    <option value="AIRPORT">Airport Transfer</option>
+  </select>
+
+  <label>Vehicle Type</label>
+  <select id="vehicleType">
+    <option value="">Select vehicle</option>
+    <option value="SEDAN">Sedan (Dzire/Etios)</option>
+    <option value="SUV">SUV (Innova/Ertiga)</option>
+    <option value="LUXURY">Luxury (Innova Crysta)</option>
+    <option value="TEMPO">Tempo Traveller</option>
+  </select>
+
+  <label>Approx Distance (KM)</label>
+  <input type="number" id="distance" placeholder="e.g. 45" min="1" />
+
+  <button class="btn btn-primary" onclick="calculateFare()">Calculate Fare</button>
 </div>
 
-<div class="loading-card" id="loadingCard">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Calculating route...</div>
-  <div class="loading-sub">Garage-to-garage distance via Google Maps</div>
+<div class="fare-box" id="fareBox">
+  <div class="label">Estimated Fare</div>
+  <div class="amount" id="fareAmount">₹0</div>
+  <div class="label" id="fareBreakdown"></div>
 </div>
 
-<div class="step-panel" id="s3">
-  <div class="card">
-    <div class="card-eyebrow">Step 3 of 5</div>
-    <div class="card-title">Choose Your Vehicle</div>
-    <div class="card-sub" id="s3sub">Recommended for your trip</div>
-    <div class="v-grid" id="vGrid"></div>
-    <div class="btn-row">
-      <button class="btn btn-outline" onclick="showStep(2)">&#8592; Back</button>
-      <button class="btn btn-gold" style="flex:1" onclick="step3Next()">Select Package &rarr;</button>
-    </div>
-  </div>
-</div>
+<button class="btn btn-agent" id="talkAgentBtn" onclick="talkToAgent()">
+  🧑‍💼 Talk to Agent & Confirm Booking
+</button>
 
-<div class="step-panel" id="s4">
-  <div class="card">
-    <div class="card-eyebrow">Step 4 of 5</div>
-    <div class="card-title">Select Package</div>
-    <div class="summary-strip" id="summaryStrip"></div>
-    <div class="pkg-grid" id="pkgGrid"></div>
-    <div class="btn-row">
-      <button class="btn btn-outline" onclick="showStep(3)">&#8592; Back</button>
-      <button class="btn btn-gold" style="flex:1" onclick="step4Next()">View Quote &rarr;</button>
-    </div>
-  </div>
-</div>
-
-<div class="step-panel" id="s5">
-  <div class="card">
-    <div id="quoteBlock"></div>
-    <div class="btn-row" style="flex-direction:column;gap:10px;margin-top:20px">
-      <button class="btn btn-green btn-full" style="font-size:16px;padding:16px" onclick="sendToAgent()">💬 Talk to Agent &amp; Confirm Booking</button>
-      <button class="btn btn-outline btn-full" onclick="showStep(3)">&#8592; Change Vehicle</button>
-    </div>
-    <p style="font-size:11px;color:var(--light);text-align:center;margin-top:12px">Toll, parking, interstate permits &amp; night halt charges additional as actuals</p>
-  </div>
-</div>
-
-<div class="step-panel" id="s-done">
-  <div class="success-card">
-    <div class="success-emoji">✅</div>
-    <div class="success-title">Request Sent to Agent!</div>
-    <div class="success-msg">Your full quote has been shared with our team.<br>An APJ Cabs advisor will call <strong id="done_phone"></strong><br>within <strong>4 hours</strong> to confirm your booking.</div>
-    <div class="info-box">
-      🕐 <strong>Working Hours:</strong> Mon–Sat, 9 AM – 8 PM IST<br>
-      🚗 Driver details shared 4 hrs before travel via WhatsApp<br>
-      📞 For urgent queries, WhatsApp us directly
-    </div>
-  </div>
-</div>
-
-</div>
+<div class="status-msg" id="statusMsg">✅ Booking request sent! An agent will reach you shortly.</div>
+<div class="error-msg" id="errorMsg">❌ Could not send. Please try again.</div>
 
 <script>
-const MAPS_KEY = 'AIzaSyAFC0sX7RcQ7Oj2hQkv3Q_HjpbBi67j9SU';
-const FC_API = 'https://cabs-952462514711362027-d37d39c8fb1f00417734408.freshchat.com/v2';
-const FC_TOKEN = 'eyJraWQiOiJjdXN0b20tb2F1dGgta2V5aWQiLCJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJmcmVzaGNoYXQiLCJhdWQiOiJmcmVzaGNoYXQiLCJpYXQiOjE3NzQzNTU5MzcsInNjb3BlIjoiYWdlbnQ6cmVhZCBhZ2VudDpjcmVhdGUgYWdlbnQ6dXBkYXRlIGFnZW50OmRlbGV0ZSBjb252ZXJzYXRpb246Y3JlYXRlIGNvbnZlcnNhdGlvbjpyZWFkIGNvbnZlcnNhdGlvbjp1cGRhdGUgbWVzc2FnZTpjcmVhdGUgbWVzc2FnZTpnZXQgYmlsbGluZzp1cGRhdGUgcmVwb3J0czpmZXRjaCByZXBvcnRzOmV4dHJhY3QgcmVwb3J0czpyZWFkIHJlcG9ydHM6ZXh0cmFjdDpyZWFkIGFjY291bnQ6cmVhZCBkYXNoYm9hcmQ6cmVhZCB1c2VyOnJlYWQgdXNlcjpjcmVhdGUgdXNlcjp1cGRhdGUgdXNlcjpkZWxldGUgb3V0Ym91bmRtZXNzYWdlOnNlbmQgb3V0Ym91bmRtZXNzYWdlOmdldCBtZXNzYWdpbmctY2hhbm5lbHM6bWVzc2FnZTpzZW5kIG1lc3NhZ2luZy1jaGFubmVsczptZXNzYWdlOmdldCBtZXNzYWdpbmctY2hhbm5lbHM6dGVtcGxhdGU6Y3JlYXRlIG1lc3NhZ2luZy1jaGFubmVsczp0ZW1wbGF0ZTpnZXQgZmlsdGVyaW5ib3g6cmVhZCBmaWx0ZXJpbmJveDpjb3VudDpyZWFkIHJvbGU6cmVhZCBpbWFnZTp1cGxvYWQiLCJ0eXAiOiJCZWFyZXIiLCJjbGllbnRJZCI6ImZjLTgxZWM1OTNhLWZiZmUtNGZlNC05N2UyLTg4ZTdhMDY0NzU2NSIsInN1YiI6ImFhZTI4YjNjLTdlOGUtNGQ4ZS04MzllLWUzOTU0ZmNiMzBlMyIsImp0aSI6IjM2NjZiYTdiLWJkODAtNDIzZC05YjYwLTYxNWI0NTcwZWU5YyIsImV4cCI6MjA4OTk3NTEzN30.LZnpKGWHF6DTZjFTvoxe4aVyYNtcLI1uHr3UAxXj9ms';
+  const BACKEND_URL = 'https://apjcabs-bridge.onrender.com';
 
-const GARAGE = {
-  Chennai:'Ashok Nagar, Chennai, Tamil Nadu, India',
-  Bengaluru:'Siddheshwara circle, Bengaluru, Karnataka, India',
-  Hyderabad:'Banjara Hills, Hyderabad, Telangana, India',
-  Mumbai:'Malvani, Malad West, Mumbai, Maharashtra, India',
-  Delhi:'Connaught Place, New Delhi, India',
-  Kochi:'Ernakulam, Kochi, Kerala, India',
-  Coimbatore:'Gandhipuram, Coimbatore, Tamil Nadu, India',
-  Madurai:'Madurai Junction, Madurai, Tamil Nadu, India',
-  Pune:'Shivajinagar, Pune, Maharashtra, India',
-  Kolkata:'Park Street, Kolkata, West Bengal, India'
-};
+  // Capture conversation_id passed from Freshchat widget via URL param
+  const urlParams = new URLSearchParams(window.location.search);
+  const conversationId = urlParams.get('conversation_id') || '';
 
-const VEHICLES = [
-  {id:'crysta_g',name:'Innova Crysta G',cat:'SUV',icon:'🚙',maxPax:6,badge:'Most Popular',
-    chennai:{p4:{km:40,price:2200},p8:{km:80,price:4250},xkm:25,xhr:350},
-    other:{p8:{km:80,price:4250},xkm:25,xhr:350}},
-  {id:'crysta_v',name:'Innova Crysta V',cat:'SUV Premium',icon:'🚙',maxPax:7,badge:'Upgraded',
-    chennai:{p4:{km:40,price:2500},p8:{km:80,price:4500},xkm:30,xhr:450},
-    other:{p8:{km:80,price:4750},xkm:30,xhr:400}},
-  {id:'hycross',name:'Innova Hycross',cat:'Hybrid SUV',icon:'🚗',maxPax:7,badge:'Eco Hybrid',
-    chennai:{p4:{km:40,price:2500},p8:{km:80,price:5000},xkm:30,xhr:500},
-    other:{p8:{km:80,price:5250},xkm:32,xhr:450}},
-  {id:'hycross_h',name:'Innova Hycross Hybrid',cat:'Hybrid SUV',icon:'🚗',maxPax:7,badge:'Premium Hybrid',
-    chennai:{p8:{km:80,price:5500},xkm:40,xhr:550},
-    other:{p8:{km:80,price:5500},xkm:35,xhr:450}},
-  {id:'fortuner',name:'Toyota Fortuner',cat:'Premium SUV',icon:'🏎️',maxPax:7,badge:'Premium',
-    chennai:{p4:{km:40,price:3500},p8:{km:80,price:7000},xkm:70,xhr:700},
-    other:{p8:{km:80,price:7000},xkm:65,xhr:700}},
-  {id:'carnival',name:'Kia Carnival',cat:'Luxury MPV',icon:'🚐',maxPax:6,badge:'Luxury MPV',
-    chennai:{p8:{km:80,price:6000},xkm:60,xhr:600},
-    other:{p8:{km:80,price:7000},xkm:65,xhr:650}},
-  {id:'camry',name:'Toyota Camry',cat:'Luxury Sedan',icon:'🏅',maxPax:3,badge:'Business',
-    chennai:{p4:{km:40,price:4500},p8:{km:80,price:9000},xkm:90,xhr:900},
-    other:{p8:{km:80,price:9000},xkm:90,xhr:900}},
-  {id:'benz_e',name:'Mercedes Benz E220D',cat:'Ultra Luxury',icon:'⭐',maxPax:3,badge:'Executive',
-    chennai:{p4:{km:40,price:6000},p8:{km:80,price:12000},xkm:120,xhr:1200},
-    other:{p8:{km:80,price:12000},xkm:120,xhr:1200}},
-  {id:'bmw5',name:'BMW 5 Series',cat:'Ultra Luxury Sedan',icon:'⭐',maxPax:3,badge:'Executive',
-    chennai:{p8:{km:80,price:12000},xkm:120,xhr:1200},
-    other:{p8:{km:80,price:12000},xkm:120,xhr:1200}},
-  {id:'audi_q7',name:'Audi Q7',cat:'Ultra Luxury SUV',icon:'💎',maxPax:6,badge:'Ultra Luxury',
-    chennai:{p8:{km:80,price:18000},xkm:150,xhr:1500},
-    other:{p8:{km:80,price:18000},xkm:150,xhr:1500}},
-  {id:'benz_s350',name:'Mercedes S350',cat:'VIP Sedan',icon:'👑',maxPax:3,badge:'VIP Class',
-    chennai:{p8:{km:80,price:21000},xkm:210,xhr:2100},
-    other:{p8:{km:80,price:25000},xkm:250,xhr:2500}},
-  {id:'vellfire',name:'Toyota Vellfire',cat:'Ultra Luxury MPV',icon:'👑',maxPax:5,badge:'VIP Lounge',
-    chennai:{p8:{km:80,price:22000},xkm:220,xhr:2200},
-    other:{p8:{km:80,price:30000},xkm:250,xhr:2500}},
-  {id:'commuter',name:'Toyota Commuter',cat:'MPV',icon:'🚌',maxPax:9,badge:'Group',
-    chennai:{p8:{km:80,price:14000},xkm:120,xhr:1400},
-    other:{p8:{km:80,price:12000},xkm:100,xhr:1000}},
-  {id:'tempo',name:'Tempo Traveller 12+1',cat:'MPV',icon:'🚌',maxPax:12,badge:'Group',
-    chennai:{p8:{km:80,price:5500},xkm:28,xhr:550},
-    other:{p8:{km:80,price:6000},xkm:35,xhr:650}},
-  {id:'urbania12',name:'Force Urbania 12+1',cat:'Luxury MPV',icon:'🚌',maxPax:12,badge:'Luxury Bus',
-    chennai:{p8:{km:80,price:12000},xkm:50,xhr:1000},
-    other:{p8:{km:80,price:12000},xkm:55,xhr:750}},
-  {id:'urbania16',name:'Force Urbania 16+1',cat:'MPV',icon:'🚌',maxPax:16,badge:'Large Group',
-    chennai:{p8:{km:80,price:12500},xkm:55,xhr:1000},
-    other:{p8:{km:80,price:12500},xkm:55,xhr:750}},
-  {id:'bus25',name:'Bharat Benz 25 Seater',cat:'Bus',icon:'🚍',maxPax:25,badge:'Corporate Bus',
-    chennai:{p12:{km:120,price:15000},xkm:70,xhr:700},
-    other:{p12:{km:120,price:15000},xkm:85,xhr:1000}},
-  {id:'bus36',name:'Bharat Benz 36 Seater',cat:'Bus',icon:'🚍',maxPax:36,badge:'Large Bus',
-    chennai:{p12:{km:120,price:17500},xkm:80,xhr:800},
-    other:{p12:{km:120,price:15000},xkm:85,xhr:1000}},
-  {id:'leyland40',name:'Ashok Leyland 40 Seater',cat:'Bus',icon:'🚍',maxPax:40,badge:'Large Bus',
-    chennai:{p12:{km:120,price:18000},xkm:90,xhr:900},
-    other:{p12:{km:120,price:18000},xkm:95,xhr:1000}},
-  {id:'volvo42',name:'Volvo Bus 42 Seater',cat:'Luxury Bus',icon:'🚍',maxPax:42,badge:'Premium Bus',
-    chennai:{p12:{km:120,price:20000},xkm:100,xhr:1000},
-    other:{p12:{km:120,price:22000},xkm:120,xhr:1200}}
-];
+  const TARIFF = {
+    LOCAL:      { SEDAN: 14, SUV: 18, LUXURY: 22, TEMPO: 28 },
+    OUTSTATION: { SEDAN: 12, SUV: 16, LUXURY: 20, TEMPO: 26 },
+    AIRPORT:    { SEDAN: 350, SUV: 500, LUXURY: 700, TEMPO: 1200 }
+  };
 
-let S = {name:'',phone:'',city:'',pickup:'',drop:'',pax:1,bags:0,date:'',dist:0,tripType:'local',vid:null,pkg:null,fare:{}};
-let pickupAC, dropAC, mapsLoaded=false;
+  let calculatedFare = 0;
 
-window.initMap = function(){
-  mapsLoaded=true;
-  pickupAC=new google.maps.places.Autocomplete(document.getElementById('f_pickup'),{componentRestrictions:{country:'in'}});
-  dropAC=new google.maps.places.Autocomplete(document.getElementById('f_drop'),{componentRestrictions:{country:'in'}});
-};
+  function calculateFare() {
+    const type = document.getElementById('journeyType').value;
+    const vehicle = document.getElementById('vehicleType').value;
+    const dist = parseFloat(document.getElementById('distance').value) || 0;
 
-function fmt(n){return n.toLocaleString('en-IN');}
-
-function showStep(n){
-  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
-  const id=n==='done'?'s-done':'s'+n;
-  document.getElementById(id).classList.add('active');
-  document.getElementById('loadingCard').style.display='none';
-  for(let i=1;i<=5;i++){
-    const el=document.getElementById('pi-'+i);if(!el)continue;
-    el.classList.remove('active','done');
-    if(typeof n==='number'){if(i<n)el.classList.add('done');else if(i===n)el.classList.add('active');}
-    else el.classList.add('done');
-  }
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function loading(show,txt){
-  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
-  const lc=document.getElementById('loadingCard');
-  lc.style.display=show?'block':'none';
-  if(txt)document.getElementById('loadingText').textContent=txt;
-}
-
-function step1Next(){
-  const name=document.getElementById('f_name').value.trim();
-  const phone=document.getElementById('f_phone').value.trim();
-  const city=document.getElementById('f_city').value;
-  if(!name){alert('Please enter your name.');return;}
-  if(!/^[6-9]\d{9}$/.test(phone)){alert('Please enter a valid 10-digit mobile number.');return;}
-  if(!city){alert('Please select your city.');return;}
-  S.name=name;S.phone=phone;S.city=city;
-  if(city==='OTHER'){alert('For your city, our agent will assist you directly.');return;}
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('f_date').min=today;
-  document.getElementById('f_date').value=today;
-  showStep(2);
-}
-
-function step2Next(){
-  const pu=document.getElementById('f_pickup').value.trim();
-  const dr=document.getElementById('f_drop').value.trim();
-  const pax=document.getElementById('f_pax').value;
-  const date=document.getElementById('f_date').value;
-  if(!pu){alert('Please enter pickup location.');return;}
-  if(!dr){alert('Please enter drop location.');return;}
-  if(!pax){alert('Please select number of passengers.');return;}
-  if(!date){alert('Please select trip date.');return;}
-  S.pickup=pu;S.drop=dr;S.pax=parseInt(pax);S.bags=parseInt(document.getElementById('f_bags').value)||0;S.date=date;
-  loading(true,'Calculating garage-to-garage distance...');
-  const garage=GARAGE[S.city]||S.city+', India';
-  if(mapsLoaded){
-    const svc=new google.maps.DirectionsService();
-    svc.route({
-      origin:garage,destination:garage,
-      waypoints:[{location:pu,stopover:true},{location:dr,stopover:true}],
-      travelMode:google.maps.TravelMode.DRIVING
-    },(res,status)=>{
-      if(status==='OK'){
-        let total=0;res.routes[0].legs.forEach(l=>total+=l.distance.value);
-        S.dist=Math.round(total/1000);
-      } else {
-        const m=prompt('Could not auto-calculate.\nEnter approximate garage-to-garage distance in KM:','60');
-        S.dist=parseInt(m)||60;
-      }
-      S.tripType=S.dist<=65?'local':'outstation';
-      loading(false);renderVehicles();showStep(3);
-    });
-  } else {
-    const m=prompt('Google Maps not loaded.\nEnter approximate distance in KM:','60');
-    S.dist=parseInt(m)||60;
-    S.tripType=S.dist<=65?'local':'outstation';
-    loading(false);renderVehicles();showStep(3);
-  }
-}
-
-function getVehicles(pax){
-  if(pax<=3) return ['crysta_g','fortuner','carnival','camry','benz_e','bmw5','audi_q7','benz_s350','vellfire'];
-  if(pax<=5) return ['crysta_g','crysta_v','hycross','hycross_h','fortuner','carnival'];
-  if(pax<=7) return ['crysta_v','hycross','hycross_h','fortuner','carnival','commuter'];
-  if(pax<=9) return ['commuter','tempo','urbania12'];
-  if(pax<=12) return ['tempo','urbania12'];
-  if(pax<=16) return ['urbania16','urbania12'];
-  if(pax<=25) return ['bus25'];
-  if(pax<=36) return ['bus36'];
-  if(pax<=40) return ['leyland40'];
-  return ['volvo42'];
-}
-
-function getTariff(v){return S.city==='Chennai'?v.chennai:v.other;}
-function getBasePrice(v){const t=getTariff(v);return (t.p4||t.p8||t.p12||{}).price||0;}
-
-function renderVehicles(){
-  const ids=getVehicles(S.pax);
-  document.getElementById('s3sub').textContent=`${ids.length} vehicle${ids.length>1?'s':''} available · ${S.dist} KM · ${S.tripType.toUpperCase()}`;
-  const g=document.getElementById('vGrid');g.innerHTML='';
-  ids.forEach((id,i)=>{
-    const v=VEHICLES.find(x=>x.id===id);if(!v)return;
-    const price=getBasePrice(v);
-    const d=document.createElement('div');
-    d.className='v-card'+(i===0?' selected':'');
-    d.innerHTML=`<div class="v-icon">${v.icon}</div>
-      <div class="v-info"><div class="v-name">${v.name}</div><div class="v-meta">${v.cat} · Up to ${v.maxPax} pax</div>
-      ${i===0?'<div class="v-badge">⭐ Recommended</div>':`<div class="v-badge" style="background:#6b7280">${v.badge}</div>`}</div>
-      <div class="v-price"><div class="v-from">from</div><div class="v-amt">₹${fmt(price)}</div></div>`;
-    d.onclick=()=>{document.querySelectorAll('.v-card').forEach(c=>c.classList.remove('selected'));d.classList.add('selected');S.vid=id;};
-    if(i===0)S.vid=id;
-    g.appendChild(d);
-  });
-}
-
-function step3Next(){
-  if(!S.vid){alert('Please select a vehicle.');return;}
-  renderPackages();showStep(4);
-}
-
-function renderPackages(){
-  const v=VEHICLES.find(x=>x.id===S.vid);
-  const t=getTariff(v);
-  document.getElementById('summaryStrip').innerHTML=
-    `<div class="ss-row">📍 <span>${S.pickup}</span> → <span class="ss-val">${S.drop}</span></div>
-     <div class="ss-row">📏 <span class="ss-val">${S.dist} KM</span> · 🚦 <span class="ss-val">${S.tripType.toUpperCase()}</span></div>
-     <div class="ss-row">🚙 <span class="ss-val">${v.name}</span> · 👥 ${S.pax} pax</div>`;
-  const pkgs=[];
-  if(t.p4&&t.p4.price>0) pkgs.push({key:'p4',label:'4 Hours / 40 KM',km:40,hrs:4,price:t.p4.price,xkm:t.xkm,xhr:t.xhr});
-  if(t.p8&&t.p8.price>0) pkgs.push({key:'p8',label:'8 Hours / 80 KM',km:80,hrs:8,price:t.p8.price,xkm:t.xkm,xhr:t.xhr});
-  if(t.p12&&t.p12.price>0) pkgs.push({key:'p12',label:'12 Hours / 120 KM',km:120,hrs:12,price:t.p12.price,xkm:t.xkm,xhr:t.xhr});
-  const g=document.getElementById('pkgGrid');g.innerHTML='';
-  pkgs.forEach((p,i)=>{
-    const excKm=Math.max(0,S.dist-p.km);
-    const estExtra=excKm*p.xkm;
-    const d=document.createElement('div');
-    d.className='pkg-card'+(i===0?' selected':'');
-    d.innerHTML=`<div>
-      <div class="pkg-name">${p.label}</div>
-      <div class="pkg-detail">Extra KM: ₹${p.xkm}/km · Extra Hr: ₹${p.xhr}/hr</div>
-      ${excKm>0?`<div class="pkg-extra-warn">⚠️ +${excKm} KM over limit → ~₹${fmt(estExtra)} extra</div>`:'<div class="pkg-extra-ok">✅ Within package distance</div>'}
-    </div>
-    <div><div class="pkg-price">₹${fmt(p.price)}</div><div class="pkg-gst">+ GST 18%</div></div>`;
-    d.onclick=()=>{document.querySelectorAll('.pkg-card').forEach(c=>c.classList.remove('selected'));d.classList.add('selected');S.pkg=p;};
-    if(i===0)S.pkg=p;
-    g.appendChild(d);
-  });
-}
-
-function step4Next(){
-  if(!S.pkg){alert('Please select a package.');return;}
-  calcAndRenderQuote();showStep(5);
-}
-
-function calcAndRenderQuote(){
-  const v=VEHICLES.find(x=>x.id===S.vid);
-  const p=S.pkg;
-  const excKm=Math.max(0,S.dist-p.km);
-  const excCost=excKm*p.xkm;
-  const base=p.price;
-  const bata=0;
-  const sub=base+excCost+bata;
-  const gst=Math.round(sub*0.18);
-  const total=sub+gst;
-  S.fare={v,p,excKm,excCost,base,bata,sub,gst,total};
-  document.getElementById('quoteBlock').innerHTML=`
-    <div class="quote-hero">
-      <div class="qh-vehicle">${v.name}</div>
-      <div class="qh-meta">${v.cat} · Chauffeur Driven · Up to ${v.maxPax} Pax</div>
-      <div class="qh-amount">₹${fmt(total)}</div>
-      <div class="qh-sub">Total Estimate incl. GST @18%</div>
-    </div>
-    <table class="qt">
-      <tr class="section-head"><td colspan="2">Trip Summary</td></tr>
-      <tr><td>📍 Pickup</td><td>${S.pickup}</td></tr>
-      <tr><td>🏁 Drop</td><td>${S.drop}</td></tr>
-      <tr><td>📅 Date</td><td>${S.date}</td></tr>
-      <tr><td>📏 Distance</td><td>${S.dist} KM (garage to garage)</td></tr>
-      <tr><td>🚦 Trip Type</td><td>${S.tripType.toUpperCase()}</td></tr>
-      <tr><td>👥 Passengers</td><td>${S.pax}</td></tr>
-      <tr class="section-head"><td colspan="2">Fare Breakdown</td></tr>
-      <tr><td>Package (${p.label})</td><td>₹${fmt(base)}</td></tr>
-      ${excKm>0?`<tr><td>Extra KM (${excKm} × ₹${p.xkm})</td><td>₹${fmt(excCost)}</td></tr>`:''}
-      <tr><td>Subtotal</td><td>₹${fmt(sub)}</td></tr>
-      <tr><td>GST @18%</td><td>₹${fmt(gst)}</td></tr>
-      <tr class="divider"><td>Total Payable</td><td>₹${fmt(total)}</td></tr>
-    </table>
-    <div class="alert alert-warn" style="margin-top:16px">⚠️ Toll, parking, night halt & interstate permit charges are additional as actuals.</div>`;
-}
-
-async function sendToAgent(){
-  const {v,p,excKm,excCost,base,bata,sub,gst,total}=S.fare;
-  const msg=`🚗 NEW BOOKING ENQUIRY – APJ CABS\n\n👤 Name: ${S.name}\n📞 Mobile: ${S.phone}\n🏙️ City: ${S.city}\n📅 Date: ${S.date}\n\n📍 Pickup: ${S.pickup}\n🏁 Drop: ${S.drop}\n📏 Distance: ${S.dist} KM\n🚦 Trip Type: ${S.tripType.toUpperCase()}\n👥 Passengers: ${S.pax} | 🧳 Bags: ${S.bags}\n\n🚙 Vehicle: ${v.name} (${v.cat})\n📦 Package: ${p.label}\n\n💰 FARE BREAKDOWN:\n   Package Fare  : ₹${fmt(base)}\n   Extra KM (${excKm} km): ₹${fmt(excCost)}\n   GST @18%      : ₹${fmt(gst)}\n   ─────────────────\n   TOTAL         : ₹${fmt(total)}\n\n[Sent via APJ Cabs Quote App]`;
-
-  // Method 1: fcWidget on same page
-  try{
-    if(typeof window.fcWidget!=='undefined'&&window.fcWidget.isLoaded()){
-      window.fcWidget.user.setFirstName(S.name);
-      window.fcWidget.user.setPhone('+91'+S.phone);
-      window.fcWidget.send({text:msg});
-      window.fcWidget.open();
+    if (!type || !vehicle || dist <= 0) {
+      alert('Please fill Journey Type, Vehicle Type and Distance.');
+      return;
     }
-  }catch(e){console.log('fcWidget:',e)}
 
-  // Method 2: postMessage to parent window (opened via bot Open URL)
-  try{
-    if(window.opener){
-      window.opener.postMessage({type:'APJ_QUOTE',msg,name:S.name,phone:S.phone},'*');
-      if(window.opener.fcWidget){
-        window.opener.fcWidget.send({text:msg});
-        window.opener.fcWidget.open();
-      }
+    const rate = TARIFF[type][vehicle];
+    if (type === 'AIRPORT') {
+      calculatedFare = rate;
+    } else {
+      calculatedFare = rate * dist;
     }
-  }catch(e){console.log('opener:',e)}
 
-  // Method 3: REST API fallback — always fires
-  try{
-    const res=await fetch(`${FC_API}/users`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${FC_TOKEN}`},
-      body:JSON.stringify({first_name:S.name,phone:S.phone,properties:[{name:'phone',value:S.phone}]})
-    });
-    const user=await res.json();
-    const uid=user.id||user.user?.id;
-    if(uid){
-      await fetch(`${FC_API}/conversations`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${FC_TOKEN}`},
-        body:JSON.stringify({channel_id:'web widget',users:[{id:uid}],messages:[{message_parts:[{text:{content:msg}}],actor_type:'user',actor_id:uid}]})
+    document.getElementById('fareAmount').textContent = '₹' + calculatedFare.toLocaleString('en-IN');
+    document.getElementById('fareBreakdown').textContent =
+      type === 'AIRPORT'
+        ? `Flat rate for ${vehicle}`
+        : `₹${rate}/km × ${dist} km`;
+
+    document.getElementById('fareBox').style.display = 'block';
+    document.getElementById('talkAgentBtn').style.display = 'block';
+  }
+
+  async function talkToAgent() {
+    const name     = document.getElementById('custName').value.trim();
+    const phone    = document.getElementById('custPhone').value.trim();
+    const pickup   = document.getElementById('pickup').value.trim();
+    const drop     = document.getElementById('drop').value.trim();
+    const date     = document.getElementById('journeyDate').value;
+    const type     = document.getElementById('journeyType').value;
+    const vehicle  = document.getElementById('vehicleType').value;
+    const dist     = document.getElementById('distance').value;
+
+    if (!name || !phone || !pickup || !drop) {
+      alert('Please fill your Name, Phone, Pickup and Drop location.');
+      return;
+    }
+
+    const summary = `
+🚖 NEW BOOKING REQUEST — APJ CABS
+━━━━━━━━━━━━━━━━━━━━━━━━
+👤 Customer : ${name}
+📞 Mobile   : ${phone}
+📍 Pickup   : ${pickup}
+📍 Drop     : ${drop}
+📅 Date     : ${date || 'Not specified'}
+🚗 Vehicle  : ${vehicle}
+🛣️ Type     : ${type}
+📏 Distance : ${dist} KM
+💰 Est. Fare: ₹${calculatedFare.toLocaleString('en-IN')}
+━━━━━━━━━━━━━━━━━━━━━━━━
+Please confirm and contact the customer.
+    `.trim();
+
+    const btn = document.getElementById('talkAgentBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/send-summary`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversation_id: conversationId, summary })
       });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        document.getElementById('statusMsg').style.display = 'block';
+        btn.textContent = '✅ Request Sent!';
+      } else {
+        throw new Error(JSON.stringify(data));
+      }
+    } catch (e) {
+      console.error(e);
+      document.getElementById('errorMsg').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '🧑‍💼 Talk to Agent & Confirm Booking';
     }
-  }catch(e){console.log('FC API:',e)}
-
-  document.getElementById('done_phone').textContent=S.phone;
-  showStep('done');
-}
+  }
 </script>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFC0sX7RcQ7Oj2hQkv3Q_HjpbBi67j9SU&libraries=places&callback=initMap" async defer></script>
-<script src="//in.fw-cdn.com/32714694/1530680.js" chat="true"></script>
 </body>
 </html>
